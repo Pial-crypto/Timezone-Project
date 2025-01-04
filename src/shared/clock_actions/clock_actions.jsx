@@ -16,6 +16,10 @@ const  handleCreateButton=()=>{
   editOrCreateState("create")
 }
 
+const handleDeleteButton=()=>{
+
+}
+
 
 
 
@@ -24,15 +28,28 @@ const  handleCreateButton=()=>{
 
 return(
   <div>
-    (!isLocal) && (<button onClick={handleEditButton}>Edit</button>)
-    (isLocal) && (<button onClick={handleCreateButton}>Create</button>)
+
+{!isLocal && (
+<>
+    <button onClick={handleEditButton}>Edit</button>
+    <button onClick={handleDeleteButton}>Delete</button>
+    </>
+)}
+
+{isLocal && (
+  <button onClick={handleCreateButton}>Create</button>
+)}
+
+
+
+
 
 {editOrCreate=='edit' && (
-<Clock_form  isLocal={false} isCreate={!editOrCreate=="edit"}></Clock_form>
+<Clock_form  isCreate={!editOrCreate=="edit"}></Clock_form>
 )}
 
 {editOrCreate=='create' && (
-<Clock_form  isLocal={false} isCreate={editOrCreate=="create"}></Clock_form>
+<Clock_form   isCreate={editOrCreate=="create"}></Clock_form>
 )}
   </div>
 )

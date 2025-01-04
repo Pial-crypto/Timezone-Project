@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import TIMEZONE_OFFSETS from "../../constants/constants"; // Assuming this is an object of time zone data
 import useClock from "../../hook/useClock"; // Assuming this is a helper function, not a hook
 import ClockList from "../../components/clock_list"; // Displays the list of clocks
@@ -74,7 +74,7 @@ const Clock_form = ({  isCreate }) => {
         {/* WRONG:   Title input was missing conditional rendering for `isLocal`. */}
         {/* {!isLocal && <input type="text" />} */}
         {/* FIXED: Added conditional rendering for title input. */}
-        {!isLocal && (
+        
           <div>
             <label htmlFor="Title">Title</label>
             <input
@@ -83,7 +83,7 @@ const Clock_form = ({  isCreate }) => {
               onChange={handleTitleChange} // Updates the title state
             />
           </div>
-        )}
+      
 
         {/* WRONG: Dropdown for time zones was missing controlled `value` binding. */}
         {/* <select name="TimeZone" id="timezone-select" onChange={handleTimeZoneChange}></select> */}
@@ -119,12 +119,18 @@ const Clock_form = ({  isCreate }) => {
         ))}
       </select>
 
-      <button type="submit">Confirm</button>
+<button type="submit">{isCreate?"Confirm":"Save"}</button>
+
 
       {/* WRONG: No error handling for ClockList if clockList is undefined. */}
       {/* <ClockList /> */}
       {/* FIXED: Ensure clockList is passed correctly. */}
-      <ClockList clockList={clockList}></ClockList>
+      {
+       useEffect(() => (
+        <ClockList clockList={clockList}></ClockList>
+       ), clockList)// Runs only once, on mount
+     
+}
     </form>
   );
 };
