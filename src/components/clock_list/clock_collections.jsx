@@ -7,8 +7,8 @@ const Clock_collection_item=({clock})=>{
     console.log("Inside clock collection item",clock)
     return(
         <>
-        <ClockDisplay date={clock.date} title={clock.title} timezone={clock.timezone} offset={clock.offset}></ClockDisplay>
-        <ClockActions isLocal={false}></ClockActions>
+        <ClockDisplay date={clock.date} title={clock.title} timezone={clock.timezone} offset={clock.offset} isLocal={false} difference={clock.difference}></ClockDisplay>
+
         </>
     )
 }

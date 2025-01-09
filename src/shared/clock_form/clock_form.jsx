@@ -1,138 +1,101 @@
-import React, { useEffect, useState } from "react";
-import TIMEZONE_OFFSETS from "../../constants/constants"; // Assuming this is an object of time zone data
-import useClock from "../../hook/useClock"; // Assuming this is a helper function, not a hook
-import ClockList from "../../components/clock_list"; // Displays the list of clocks
+import React, { useState } from "react";
+import TIMEZONE_OFFSETS from "../../constants/constants";
+import useClock from "../../hook/useClock";
+import classes from "./index.module.css"
 
-const Clock_form = ({  isCreate }) => {
-  // WRONG: You did not check if TIMEZONE_OFFSETS was undefined or null.
-  // if (TIMEZONE_OFFSETS) { /* some logic */ }
-  // FIXED: Added a null/undefined check for TIMEZONE_OFFSETS.
-  if (!TIMEZONE_OFFSETS) {
-    console.error("TIMEZONE_OFFSETS is undefined or null");
-    return <div>Error: Timezone data is unavailable.</div>;
-  }
-
-  // WRONG: You used incorrect destructuring like `{ title, titleState }`.
-  // const { title, titleState } = useState("");
-  // FIXED: Proper destructuring of `useState` into `[state, setState]`.
-  const [title, setTitle] = useState(""); // Holds the title of the clock
+const ClockForm = ({ isCreate, handleCloseForm, handleSaveClock }) => {
+  const [title, setTitle] = useState("");
+  const [timezone, setTimezone] = useState("UTC"); // Default timezone key
   const [offsetValue, setOffsetValue] = useState(TIMEZONE_OFFSETS["UTC"].offset_value); // Default offset (UTC)
-  const [fullMeaning, setFullMeaning] = useState(TIMEZONE_OFFSETS["UTC"].full_meaning); // Default full meaning (UTC)
-  const [clockList, setClockList] = useState([]); // Stores the list of clocks
 
+  // Handle title input change
   const handleTitleChange = (event) => {
-    // WRONG: You tried to call titleState directly without `setState`.
-    // titleState(event.target.value);
-    // FIXED: Use the `setTitle` function from `useState`.
     setTitle(event.target.value);
   };
 
-  const handleOffsetChange = (event) => {
-    // WRONG: You did not convert the offset properly between hours and minutes.
-    // const value = event.target.value;
-    // FIXED: Convert to minutes for internal state and back to hours for display.
-    const value = parseInt(event.target.value, 10) * 60; // Convert to minutes
-    setOffsetValue(value);
-
-    // Update fullMeaning only if it's not GMT or UTC
-    if (fullMeaning !== "GMT" && fullMeaning !== "UTC") {
-      const key = Object.keys(TIMEZONE_OFFSETS).find(
-        (key) => TIMEZONE_OFFSETS[key].offset_value === value
-      );
-      if (key) {
-        setFullMeaning(key);
-      }
-    }
-  };
-
+  // Handle timezone dropdown change
   const handleTimeZoneChange = (event) => {
-    // WRONG: You did not update fullMeaning and offsetValue together.
-    // const value = event.target.value; setFullMeaning(value);
-    // FIXED: Update both fullMeaning and offsetValue based on the selected timezone.
     const value = event.target.value;
-    setFullMeaning(value);
+    setTimezone(value);
     setOffsetValue(TIMEZONE_OFFSETS[value].offset_value);
   };
 
-  const handleSubmit = (event) => {
-    // WRONG: You missed `event.preventDefault()`, causing page reload.
-    // // some code without event.preventDefault()
-    // FIXED: Prevent page reload on form submission.
-    event.preventDefault();
+  // Handle offset dropdown change
+  const handleOffsetChange = (event) => {
+    const newOffset = parseInt(event.target.value, 10) * 60; // Convert hours to minutes
+    setOffsetValue(newOffset);
 
-    // WRONG: You treated `useClock` like a hook and used it incorrectly.
-    // const newClock = useClock; // Improper usage
-    // FIXED: Use `useClock` as a helper function and call it with arguments.
-    const newClock = useClock(title, fullMeaning, offsetValue);
-    console.log(newClock)
-    setClockList([...clockList, newClock]); // Add the new clock to the clock list
+    // Allow free offset change for UTC or GMT
+    if (timezone === "UTC" || timezone === "GMT") {
+      return;
+    }
+
+    // Find the matching timezone for the new offset
+    const matchingTimezone = Object.keys(TIMEZONE_OFFSETS).find(
+      (key) => TIMEZONE_OFFSETS[key].offset_value === newOffset
+    );
+
+    if (matchingTimezone) {
+      setTimezone(matchingTimezone);
+    }
+  };
+
+  // Handle form submission
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    const newClock = useClock(title, timezone, offsetValue);
+    console.log("I am the new clock",newClock)
+handleSaveClock(newClock)
+
+ 
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        {/* WRONG:   Title input was missing conditional rendering for `isLocal`. */}
-        {/* {!isLocal && <input type="text" />} */}
-        {/* FIXED: Added conditional rendering for title input. */}
-        
-          <div>
-            <label htmlFor="Title">Title</label>
-            <input
-              type="text"
-              value={title} // FIXED: Added controlled input binding
-              onChange={handleTitleChange} // Updates the title state
-            />
-          </div>
-      
-
-        {/* WRONG: Dropdown for time zones was missing controlled `value` binding. */}
-        {/* <select name="TimeZone" id="timezone-select" onChange={handleTimeZoneChange}></select> */}
-        {/* FIXED: Added controlled binding for value and onChange. */}
-        <label htmlFor="timezone-select">Choose Timezone:</label>
+    <div className={classes.card}>
+      <h3>{isCreate ? "Create New Clock" : "Edit Clock"}</h3>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Title:
+          <input
+            type="text"
+            value={title}
+            onChange={handleTitleChange}
+            placeholder="Enter clock title"
+            required
+          />
+        </label>
+        <br />
+        <label>
+          Timezone:
+          <select value={timezone} onChange={handleTimeZoneChange}>
+            {Object.keys(TIMEZONE_OFFSETS).map((key) => (
+              <option key={key} value={key}>
+                {TIMEZONE_OFFSETS[key].full_meaning}
+              </option>
+            ))}
+          </select>
+        </label>
+        <br />
+        <label htmlFor="offset-select">Offset (Hours):</label>
         <select
-          name="TimeZone"
-          id="timezone-select"
-          value={fullMeaning}
-          onChange={handleTimeZoneChange}
+          id="offset-select"
+          value={offsetValue / 60} // Convert minutes to hours for display
+          onChange={handleOffsetChange}
         >
-          {Object.keys(TIMEZONE_OFFSETS).map((key) => (
-            <option key={key} value={key}>
-              {TIMEZONE_OFFSETS[key].full_meaning}
+          {Object.entries(TIMEZONE_OFFSETS).map(([key, value]) => (
+            <option key={key} value={value.offset_value / 60}>
+              {value.offset_value / 60} hours
             </option>
           ))}
         </select>
-      </div>
-
-      {/* WRONG: Offset dropdown was missing controlled binding. */}
-      {/* <select id="offset-select" onChange={handleOffsetChange}></select> */}
-      {/* FIXED: Added controlled binding for value and onChange. */}
-      <label htmlFor="offset-select">Choose Offset:</label>
-      <select
-        id="offset-select"
-        value={offsetValue / 60} // Convert to hours for display
-        onChange={handleOffsetChange}
-      >
-        {Object.entries(TIMEZONE_OFFSETS).map(([key, value]) => (
-          <option key={key} value={value.offset_value / 60}>
-            {value.offset_value / 60} hours
-          </option>
-        ))}
-      </select>
-
-<button type="submit">{isCreate?"Confirm":"Save"}</button>
-
-
-      {/* WRONG: No error handling for ClockList if clockList is undefined. */}
-      {/* <ClockList /> */}
-      {/* FIXED: Ensure clockList is passed correctly. */}
-      {
-       useEffect(() => (
-        <ClockList clockList={clockList}></ClockList>
-       ), clockList)// Runs only once, on mount
-     
-}
-    </form>
+        <br />
+        <button type="submit">{isCreate ? "Create" : "Save"}</button>
+        <button type="button" onClick={handleCloseForm}>
+          Cancel
+        </button>
+      </form>
+    </div>
   );
 };
 
-export default Clock_form;
+export default ClockForm;

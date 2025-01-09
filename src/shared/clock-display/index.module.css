@@ -1,0 +1,82 @@
+/* Parent container styling */
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: auto;
+    margin: 10px auto;
+    padding: 10px;
+
+    border: 3px solid #4a4a8a;
+    border-radius: 15px;
+    background: radial-gradient(circle, #f0f8ff, #c8d8f8);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Title styling */
+.card h1 {
+    font-size: 26px;
+    font-weight: bold;
+    color: #3b3b6b;
+    margin: 10px 0;
+    text-align: center;
+}
+
+/* Time styling */
+.card h3 {
+    font-size: 20px;
+    color: #444;
+    margin: 10px 0;
+    text-align: center;
+}
+
+/* Timezone and offset info */
+.card p {
+    font-size: 16px;
+    color: #666;
+    margin: 5px 0;
+    text-align: center;
+}
+
+/* Buttons for ClockActions */
+.card button {
+    background-color: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    margin-top: 15px;
+    margin-left: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.card button:hover {
+    background-color:  #11110f;
+}
+
+/* Deleted clock message */
+.deleted-message {border: 3px solid #4a4a8a;
+    margin: 10px auto;
+    padding: 10px;
+    height: auto;
+    width: auto;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #912c2c;
+    text-align: center;
+}
+
+.welcome{
+    font-size: 50px;
+}

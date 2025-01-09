@@ -6,6 +6,7 @@ import ClockList from './components/clock_list';
 import { useState } from 'react';
 import ClockActions from './shared/clock_actions/clock_actions';
 import { tr } from 'date-fns/locale';
+import Test from './Test';
 
 function App() {
   //const date=new Date()
@@ -18,15 +19,19 @@ function App() {
 
 const localClock=useClock(null,null,null,true)
 
- // console.log(localDate,timezone,offset)
+
+  console.log("localDate,timezone,offset",localClock.date)
   return (
    
      
+ 
+<div className='container'>
+
+   
+    
+       <LocalClock date={localClock.date} timezone={localClock.timezone} offset={localClock.offset} ></LocalClock>
       
-    <div>
-      <LocalClock date={localClock.date} timezone={localClock.timezone} offset={localClock.offset} ></LocalClock>
-      
-      </div>
+       </div>
 
    
 
